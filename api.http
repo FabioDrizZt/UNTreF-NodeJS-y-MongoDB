@@ -1,0 +1,41 @@
+### Ir a la pagina principal
+ http://localhost:3000
+
+### Mostrar todas las pelis
+GET http://localhost:3000/peliculas
+
+### Mostrar las pelis de un cierto genero por query
+GET http://localhost:3000/peliculas?genero=Romance
+
+### Mostrar las pelis de un cierto genero por query
+GET http://localhost:3000/peliculas?genero=risa
+
+### Mostrar una peli por id
+GET http://localhost:3000/peliculas/2e6900e2-0b48-4fb6-ad48-09c7086e54fe
+
+### Mostrar una peli por id que no existe
+GET http://localhost:3000/peliculas/5ad1a335-0d9c-410a-b32b-220d91689a08
+
+### Agregar una peli (el id se genera en el backend)
+POST http://localhost:3000/peliculas/
+content-type: application/json
+
+{
+    "title": "Mi peli nueva",
+    "year": 2024,
+    "director": "Fabio",
+    "duration": 120,
+    "genre": ["Action","Drama","Crime"]
+}
+
+### Borrar una peli por id
+DELETE http://localhost:3000/peliculas/207afb33-c372-488d-93fd-7ab3a5c582a8
+
+### Modificar/Actualizar una peli
+PATCH http://localhost:3000/peliculas/207afb33-c372-488d-93fd-7ab3a5c582a8
+content-type: application/json
+
+{
+    "duration": 200,
+    "year" : 2023
+}
