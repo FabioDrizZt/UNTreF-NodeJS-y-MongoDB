@@ -10,8 +10,14 @@ GET http://localhost:3000/peliculas?genero=Romance
 ### Mostrar las pelis de un cierto genero por query
 GET http://localhost:3000/peliculas?genero=risa
 
-### Mostrar una peli por id
-GET http://localhost:3000/peliculas/2e6900e2-0b48-4fb6-ad48-09c7086e54fe
+### Mostrar una peli por id - Dark Knight
+GET http://localhost:3000/peliculas/684b5bc648f3b1c63ff28829
+
+### Mostrar Peliculas por director
+GET http://localhost:3000/peliculas/director/Christopher Nolan
+
+### Mostrar Peliculas con una puntuación mayor o igual a :rate
+GET http://localhost:3000/peliculas/rate/8.5
 
 ### Mostrar una peli por id que no existe
 GET http://localhost:3000/peliculas/5ad1a335-0d9c-410a-b32b-220d91689a08
