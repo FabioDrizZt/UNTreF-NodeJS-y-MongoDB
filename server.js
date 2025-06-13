@@ -1,7 +1,7 @@
 const { connect, disconnect } = require("./db/connection");
 const { ObjectId } = require("mongodb");
 const express = require("express");
-const { validarPeli } = require("./schemas/pelis.js");
+const { validarPeli, validarPeliParcialmente } = require("./schemas/pelis.js");
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -23,7 +23,7 @@ app.use("/peliculas", async (req, res, next) => {
 });
 // Ruta raiz
 app.get("/", (req, res) => {
-  res.send("Bienvenido a la API de Peliculas");
+  res.send("Bienvenido a la API de Peliculas 🎞");
 });
 // Mostrar todas las Peliculas
 app.get("/peliculas", async (req, res) => {
@@ -44,8 +44,7 @@ app.get("/peliculas", async (req, res) => {
 app.get("/peliculas/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const objectId = new ObjectId(id);
-    const movie = await req.db.findOne({ _id: objectId });
+    const movie = await req.db.findOne({ _id: new ObjectId(id) });
     if (!movie) {
       res.status(404).json({ error: "No movie found" });
     } else {
@@ -87,16 +86,55 @@ app.get("/peliculas/rate/:rate", async (req, res) => {
 app.post("/peliculas", async (req, res) => {
   const resultado = validarPeli(req.body);
   if (!resultado.success) {
-    res
-      .status(400)
-      .json({ error: "Invalid data: ", data: resultado.error.message });
+    res.status(400).json({ error: resultado.error.message });
   }
-  const peliNueva = resultado.data;
   try {
-    await req.db.insertOne(peliNueva);
-    res.status(201).json(peliNueva);
+    await req.db.insertOne(resultado.data);
+    res.status(201).json(resultado.data);
   } catch (error) {
     res.status(500).json({ error: "Error creating movie" });
+  }
+});
+// Borrar Peliculas
+app.delete("/peliculas/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { deletedCount } = await req.db.deleteOne({ _id: new ObjectId(id) });
+    res
+      .status(deletedCount === 0 ? 404 : 204)
+      .json(
+        deletedCount === 0
+          ? { error: "Movie not found" }
+          : { message: "Movie deleted" }
+      );
+  } catch (error) {
+    res.status(500).json({ error: "Error deleting movie" });
+  }
+});
+// Modificar Peliculas
+app.patch("/peliculas/:id", async (req, res) => {
+  const resultado = validarPeliParcialmente(req.body);
+  const peliNueva = resultado.data;
+  if (!resultado.success) {
+    res.status(400).json({ error: resultado.error.message });
+  }
+  const { id } = req.params;
+  try {
+    const updateResult = await req.db.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: peliNueva },
+      { returnDocument: "after" }
+    );
+    if (!updateResult) {
+      res.status(404).json({ message: "Peli no encontrada para actualizar" });
+    } else {
+      res.json({
+        message: "Peli actualizada con éxito",
+        updatedMovie: updateResult,
+      });
+    }
+  } catch (error) {
+    res.status(500).send("Error al actualizar la película");
   }
 });
 // Escuchar el servidor

@@ -24,6 +24,11 @@ const validarPeli = (peli) => {
   return peliSchema.safeParse(peli)
 }
 
+const validarPeliParcialmente = (peli) => {
+  return peliSchema.partial().safeParse(peli)
+}
+
 module.exports = {
-  validarPeli
+  validarPeli,
+  validarPeliParcialmente
 }
